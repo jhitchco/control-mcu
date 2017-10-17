@@ -1,5 +1,4 @@
 /*
-
  v0.9
  Features
   Fan control
@@ -54,12 +53,12 @@
 
 */
 
-// get all the pins figured out
-const string fan_voltage = "A0";
-const int left_bink_button = 2;
-const int right_blink_button = 3;
-const int low_beams_button = 4;
-const int high_beams_button = 5;
+
+const int fan_voltage = 0;
+const int left_blink_pin = 2;
+const int right_blink_pin = 3;
+const int low_beams_pin = 4;
+const int high_beams_pin = 5;
 const int low_beams_nmos = 6;
 const int fan_mosfet = 7;
 const int left_blink_nmos = 10;
@@ -67,29 +66,33 @@ const int right_blink_nmos = 11;
 const int high_beams_nmos = 12;
 
 // set the initial states of the agent state
-string blinker = "n";
-string lights = "n";
+//char blink = "n";
+//char lights = "n";
 int fan_on = 0;
 
 // init the buttons and previous states;
-int left_bink_button_state = LOW;
+int left_blink_button = LOW;
 int right_blink_button = LOW;
 int low_beams_button = LOW;
 int high_beams_button = LOW;
-int left_bink_button_state_last = LOW;
+
+int left_blink_button_last = LOW;
 int right_blink_button_last = LOW;
 int low_beams_button_last = LOW;
 int high_beams_button_last = LOW;
 
-
-unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 250;
+unsigned long left_blink_button_debounce = 0;
+unsigned long right_blink_button_debounce = 0;
+unsigned long low_beams_button_debounce = 0;
+unsigned long high_beams_button_debounce = 0;
 
 void setup() {
-  pinMode(left_bink_button, INPUT);
-  pinMode(right_blink_button, INPUT);
-  pinMode(low_beams_button, INPUT);
-  pinMode(high_beams_button, INPUT);
+
+  pinMode(left_blink_pin, INPUT);
+  pinMode(right_blink_pin, INPUT);
+  pinMode(low_beams_pin, INPUT);
+  pinMode(high_beams_pin, INPUT);
   
   pinMode(low_beams_nmos, INPUT);
   pinMode(fan_mosfet, OUTPUT);
@@ -107,9 +110,54 @@ void setup() {
 void loop() {
   // process here, read the buttons, check for debounce, and then do the magic
   
-  int left_bink_button_last = digitalRead(left_bink_button);
-  int right_blink_button_last = digitalRead(right_blink_button); 
-  int low_beams_button_last = digitalRead(low_beams_button);
-  int high_beams_button_last = digitalRead(high_beams_button);
+  
+  // read the buttons and debounce
+  
+  if (left_blink_button_last != digitalRead(left_blink_pin)) {
+    left_blink_button_debounce = millis();
+  }
+  if (right_blink_button_last != digitalRead(right_blink_pin)) {
+    right_blink_button_debounce= millis();
+  }
+  if (low_beams_button_last != digitalRead(low_beams_pin)) {
+    low_beams_button_debounce  = millis();
+  }
+  if (high_beams_button_last != digitalRead(high_beams_pin)) {
+    high_beams_button_debounce  = millis();
+  }
+  
+  // update the state
+  
+  if ((millis() - left_blink_button_debounce) > debounceDelay) {
+    if (left_blink_button != digitalRead(left_blink_pin)) {
+      // do a button press for left
+    }
+  }
 
+  if ((millis() - right_blink_button_debounce) > debounceDelay) {
+    if (right_blink_button != digitalRead(right_blink_pin)) {
+      // do a button press for right
+    }
+  }
+
+  if ((millis() - low_beams_button_debounce) > debounceDelay) {
+      if (low_beams_button != digitalRead(low_beams_pin)) {
+      // do a button press for low
+    }    
+  }
+
+  if ((millis() - high_beams_button_debounce) > debounceDelay) {
+      if (high_beams_button != digitalRead(high_beams_pin)) {
+      // do a button press for high
+    }
+}
+  
+
+  // set the digital out
+  digitalWrite(left_blink_pin, left_blink_button);
+  digitalWrite(right_blink_pin, right_blink_button);
+  digitalWrite(low_beams_pin, low_beams_button);
+  digitalWrite(high_beams_pin, high_beams_button);
+  // fan control loop
+  
 }
